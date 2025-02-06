@@ -1,0 +1,12 @@
+[package]
+name = "fscape"
+version = "0.1.0"
+edition = "2021"
+authors = ["Victor Schappert"]
+repository =  "https://github.com/gogama/fscape"
+license = "MIT"
+description = "Delete files to control filesystem disk usage automatically"
+categories = ["filesystem"]
+keywords = ["disk", "use", "usage", "space", "free", "delete", "deletion", "rules", "log", "files"]
+
+[dependencies]
