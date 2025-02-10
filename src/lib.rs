@@ -11,6 +11,15 @@ pub struct FilesystemRule {
     /// only files that are children of this directory can ever be deleted.
     pub root_directory_path: String,
 
+    /// How often to check the thresholds, e.g. once per minute.
+    pub period: Duration,
+
+    /// Deletion rules to run if either threshold level is breached.
+    pub delete_rules: Vec<DeleteRule>,
+}
+
+#[derive(Debug, Clone)]
+pub struct DeleteRule {
     /// Threshold level of filesystem usage as a percentage of blocks used to total blocks above
     /// which the rule deletion groups will be evaluated.
     pub usage_threshold_pct: Option<u8>,
@@ -19,22 +28,20 @@ pub struct FilesystemRule {
     /// bytes.
     pub usage_threshold_mb: Option<u64>,
 
-    /// How often to check the thresholds, e.g. once per minute.
-    pub period: Duration,
-
-    /// Deletion rules to run if either threshold level is breached.
-    pub deletion_rules: Vec<DeletionRule>,
+    pub select_rules: Vec<SelectRule>
 }
 
-// A rule specifying how to identify and delete files within a monitored directory tree when
-// filesystem usage thresholds are exceeded.
+// A rule specifying how to select candidate files for deletion within a monitored directory tree.
 //
-// Deletion rules are executed in the following way. First, the full set of candidates files is
-// identified by evaluating the all the include and exclude patterns. The candidate set is
+// Selection rules are executed in the following way. First, the full set of candidates files is
+// identified by evaluating the all the include and exclude patterns. Then the candidate set is
 // constructed as the set of all files that match the include patterns minus any files that match
-// the exclude patterns minus any files that are directories.
+// the exclude patterns minus any files that are directories minus any files that do not match the
+// filter. The resulting set of files is sorted according to the given sort order.
+//
+// TODO: How are symbolic links handled?
 #[derive(Debug, Clone)]
-pub struct DeletionRule {
+pub struct SelectRule {
     // File path patterns relative to the root directory of the monitored directory tree that are
     // *potentially* subject to deletion by this rule.
     //
@@ -55,16 +62,14 @@ pub struct DeletionRule {
 
     // TODO: Symbolic links.
 
-    /// Attribute is an enum, e.g. Age.
-    /// OrderedAttribute is an Attribute
-    /// with ASC or DESC ordering attached.
-    pub sort: Vec<OrderedAttribute>,
-
     /// Subset of the attributes from Sort.
     /// When you reach any of these limits
     /// in the sorted list of files, e.g.
     /// an age limit, deletion must stop.
-    pub limits: HashMap<Attribute, Value>,
+    pub filter: HashMap<Attribute, Value>,
+
+    /// d.
+    pub sort: Vec<OrderedAttribute>,
 }
 
 // Assuming these enums/structs are defined elsewhere

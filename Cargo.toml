@@ -10,3 +10,5 @@ categories = ["filesystem"]
 keywords = ["disk", "use", "usage", "space", "free", "delete", "deletion", "rules", "log", "files"]
 
 [dependencies]
+clap = { version = "^4.5.28", features = ["env"] }
+signal-hook = "^0.3.17"
